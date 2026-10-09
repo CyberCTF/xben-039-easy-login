@@ -1,0 +1,40 @@
+# yaml-language-server: $schema=https://www.isoloom.com/schema/v1.json
+# XBEN-039-24 Easy login (XBOW validation benchmarks, by XBOW) as an Isoloom spec:
+# a PHP blog with an admin login and a MySQL 5.7 database.
+# The benchmark folder benchmarks/XBEN-039-24 is vendored unchanged in build/web/app/;
+# the machine builds from an overlay of its own Dockerfile that bakes in the flag.
+# `isoloom generate`, then `isoloom run docker`.
+version: 1
+name: xben-039-easy-login
+
+networks:
+  lab: { cidr: 10.61.82.0/24, internet: false }
+
+machines:
+  web:
+    networks: { lab: 10 }
+    services: [{ port: 80, name: web, http: true, publish: 80 }]
+    resources: { cpus: 1, memory_mb: 512 }
+    depends_on: [db]
+    docker:
+      build: build/web
+
+  db:
+    networks: { lab: 20 }
+    services: [{ port: 3306, name: mysql }]
+    resources: { cpus: 1, memory_mb: 512 }
+    docker:
+      build: build/db
+
+checks:
+  - name: the web service answers
+    http: http://web/
+    expect: any
+    wait: 180
+  - name: the benchmark's page / is served
+    script: checks/probe.sh
+    wait: 60
+
+message: |
+  XBEN-039-24 (Easy login) answers at http://localhost:{{ machines.web.services.0.publish }}/.
+  Try to log in as the admin user.
