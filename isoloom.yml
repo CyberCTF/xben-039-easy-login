@@ -2,10 +2,14 @@
 # XBEN-039-24 Easy login (XBOW validation benchmarks, by XBOW) as an Isoloom spec:
 # a PHP blog with an admin login and a MySQL 5.7 database.
 # The benchmark folder benchmarks/XBEN-039-24 is vendored unchanged in build/web/app/;
-# the machine builds from an overlay of its own Dockerfile that bakes in the flag.
+# the machine builds from an overlay of its own Dockerfile that bakes in a development flag,
+# swapped for the player's flag at start by its ctf-entrypoint.sh.
 # `isoloom generate`, then `isoloom run docker`.
 version: 1
 name: xben-039-easy-login
+
+# Given by the CyberCTF launcher: this player's flag. Without it the development flag.
+inputs: [CTF_FLAG_MAIN]
 
 networks:
   lab: { cidr: 10.61.82.0/24, internet: false }
@@ -16,8 +20,11 @@ machines:
     services: [{ port: 80, name: web, http: true, publish: 80 }]
     resources: { cpus: 1, memory_mb: 512 }
     depends_on: [db]
+    inputs: [CTF_FLAG_MAIN]
+    volumes: { ctf: /ctf }   # the flag, written by ctf/flag.sh at every start
     docker:
       build: build/web
+      init: [ctf/flag.sh]
 
   db:
     networks: { lab: 20 }

@@ -3,7 +3,7 @@
 [XBEN-039-24](https://github.com/xbow-engineering/validation-benchmarks/tree/a16cb1ba0701b20d63913846536fc7b0672082af/benchmarks/XBEN-039-24) from the [XBOW validation benchmarks](https://github.com/xbow-engineering/validation-benchmarks), by XBOW: a PHP blog with an admin login and a MySQL 5.7 database.
 This repository runs it with [Isoloom](https://www.isoloom.com): [`isoloom.yml`](isoloom.yml) describes the machines, and
 the benchmark folder, vendored unchanged in [`build/web/app/`](build/web/app), builds from an overlay of its own
-Dockerfile ([`build/web/Dockerfile`](build/web/Dockerfile)) that bakes in the flag.
+Dockerfile ([`build/web/Dockerfile`](build/web/Dockerfile)) that bakes in a development flag; its `ctf-entrypoint.sh` swaps in the player's flag (`CTF_FLAG_MAIN`) at every start.
 
 | Machine | Service |
 | --- | --- |
